@@ -34,7 +34,7 @@ private struct StickerEffectViewModifier: ViewModifier {
                                 y: (motion.transform.y + proxy.size.height / 2) / proxy.size.height
                             ),
                             reflectionSize: Float(min(proxy.size.width, proxy.size.height) / 2),
-                            reflectionIntensity: motion.isActive ? stickerLightIntensity : 0
+                            reflectionIntensity: motion.lightIntensity * stickerLightIntensity
                         )
                     )
             }

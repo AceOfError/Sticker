@@ -9,5 +9,6 @@ import Foundation
 
 public struct StickerMotion: Hashable, Equatable, Sendable {
     public var isActive: Bool = false
+    public var lightIntensity: Float = 0
     public var transform: StickerTransform = .neutral
 }

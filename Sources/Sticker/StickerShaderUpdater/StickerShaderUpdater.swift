@@ -21,9 +21,10 @@ final class StickerShaderUpdater {
     }
 
     @MainActor
-    func update(with transform: StickerTransform) {
+    func update(with transform: StickerTransform, lightIntensity: Float = 1) {
         motion = .init(
             isActive: true,
+            lightIntensity: lightIntensity,
             transform: transform
         )
         onChange(motion)
@@ -33,6 +34,7 @@ final class StickerShaderUpdater {
     func setNeutral() {
         motion = .init(
             isActive: false,
+            lightIntensity: 0,
             transform: .neutral
         )
         onChange(motion)

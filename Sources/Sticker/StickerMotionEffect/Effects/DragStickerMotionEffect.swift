@@ -48,8 +48,9 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
                                         let ease = t * t * (3 - 2 * t) // smoothstep
                                         let x = startX * (1 - ease)
                                         let y = startY * (1 - ease)
+                                        let light = Float(1 - ease)
                                         if i < steps {
-                                            shaderUpdater.update(with: .init(x: x, y: y))
+                                            shaderUpdater.update(with: .init(x: x, y: y), lightIntensity: light)
                                         } else {
                                             shaderUpdater.setNeutral()
                                         }
