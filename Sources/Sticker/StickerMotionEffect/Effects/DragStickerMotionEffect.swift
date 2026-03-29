@@ -32,11 +32,28 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
                                 shaderUpdater.update(with: transform)
                             }
                             .onEnded { _ in
+                                let startX = transform.x
+                                let startY = transform.y
+                                let steps = 20
+                                let totalDuration = 0.7
+                                let interval = totalDuration / Double(steps)
+
                                 withAnimation(.spring(duration: 0.8, bounce: 0.15)) {
                                     transform = .neutral
                                 }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                    shaderUpdater.setNeutral()
+
+                                for i in 1...steps {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + interval * Double(i)) {
+                                        let t = Double(i) / Double(steps)
+                                        let ease = t * t * (3 - 2 * t) // smoothstep
+                                        let x = startX * (1 - ease)
+                                        let y = startY * (1 - ease)
+                                        if i < steps {
+                                            shaderUpdater.update(with: .init(x: x, y: y))
+                                        } else {
+                                            shaderUpdater.setNeutral()
+                                        }
+                                    }
                                 }
                             }
                     )
