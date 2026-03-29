@@ -32,7 +32,9 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
                                 shaderUpdater.update(with: transform)
                             }
                             .onEnded { _ in
-                                transform = .neutral
+                                withAnimation(.spring(duration: 0.8, bounce: 0.15)) {
+                                    transform = .neutral
+                                }
                                 shaderUpdater.setNeutral()
                             }
                     )
