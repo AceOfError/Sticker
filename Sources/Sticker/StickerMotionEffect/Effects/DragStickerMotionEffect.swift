@@ -11,6 +11,7 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
     let intensity: Double
 
     @State private var transform: StickerTransform = .neutral
+    @State private var settleTimer: Timer?
 
     @Environment(\.stickerShaderUpdater) private var shaderUpdater
 
@@ -25,6 +26,8 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
                     .gesture(
                         DragGesture()
                             .onChanged { gesture in
+                                settleTimer?.invalidate()
+                                settleTimer = nil
                                 transform = .init(
                                     x: gesture.location.x - size.width / 2,
                                     y: gesture.location.y - size.height / 2
@@ -34,28 +37,33 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
                             .onEnded { _ in
                                 let startX = transform.x
                                 let startY = transform.y
-                                let steps = 30
-                                let totalDuration = 0.5
-                                let interval = totalDuration / Double(steps)
+                                let startTime = CACurrentMediaTime()
+                                let duration = 0.4
 
-                                withAnimation(.spring(duration: 0.5, bounce: 0.12)) {
-                                    transform = .neutral
-                                }
+                                settleTimer?.invalidate()
+                                let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { timer in
+                                    let elapsed = CACurrentMediaTime() - startTime
+                                    let t = min(elapsed / duration, 1.0)
+                                    // Smooth ease-out curve
+                                    let ease = 1 - pow(1 - t, 3)
 
-                                for i in 1...steps {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + interval * Double(i)) {
-                                        let t = Double(i) / Double(steps)
-                                        let ease = t * t * (3 - 2 * t)
-                                        let x = startX * (1 - ease)
-                                        let y = startY * (1 - ease)
-                                        let light = Float(1 - ease)
-                                        if i < steps {
-                                            shaderUpdater.update(with: .init(x: x, y: y), lightIntensity: light)
-                                        } else {
-                                            shaderUpdater.setNeutral()
-                                        }
+                                    let x = startX * (1 - ease)
+                                    let y = startY * (1 - ease)
+                                    let light = Float(1 - ease)
+
+                                    transform = .init(x: x, y: y)
+
+                                    if t >= 1.0 {
+                                        transform = .neutral
+                                        shaderUpdater.setNeutral()
+                                        timer.invalidate()
+                                        settleTimer = nil
+                                    } else {
+                                        shaderUpdater.update(with: .init(x: x, y: y), lightIntensity: light)
                                     }
                                 }
+                                RunLoop.main.add(timer, forMode: .common)
+                                settleTimer = timer
                             }
                     )
             }
@@ -66,7 +74,7 @@ public extension StickerMotionEffect where Self == DragStickerMotionEffect {
     static var dragGesture: Self {
         .dragGesture()
     }
-    
+
     static func dragGesture(intensity: Double = 1) -> Self {
         .init(intensity: intensity)
     }
