@@ -34,11 +34,11 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
                             .onEnded { _ in
                                 let startX = transform.x
                                 let startY = transform.y
-                                let steps = 8
-                                let totalDuration = 0.7
+                                let steps = 30
+                                let totalDuration = 0.5
                                 let interval = totalDuration / Double(steps)
 
-                                withAnimation(.spring(duration: 0.8, bounce: 0.15)) {
+                                withAnimation(.spring(duration: 0.5, bounce: 0.12)) {
                                     transform = .neutral
                                 }
 
