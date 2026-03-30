@@ -34,7 +34,7 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
                             .onEnded { _ in
                                 let startX = transform.x
                                 let startY = transform.y
-                                let steps = 20
+                                let steps = 8
                                 let totalDuration = 0.7
                                 let interval = totalDuration / Double(steps)
 
@@ -45,7 +45,7 @@ public struct DragStickerMotionEffect: StickerMotionEffect {
                                 for i in 1...steps {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + interval * Double(i)) {
                                         let t = Double(i) / Double(steps)
-                                        let ease = t * t * (3 - 2 * t) // smoothstep
+                                        let ease = t * t * (3 - 2 * t)
                                         let x = startX * (1 - ease)
                                         let y = startY * (1 - ease)
                                         let light = Float(1 - ease)
